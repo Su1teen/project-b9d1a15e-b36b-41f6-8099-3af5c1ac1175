@@ -16,9 +16,7 @@ function ComparePage() {
   const remove = useCompare((s) => s.remove);
   const items = products.filter((p) => ids.includes(p.id));
 
-  const specKeys = Array.from(
-    new Set(items.flatMap((p) => Object.keys(p.specs))),
-  );
+  const specKeys = Array.from(new Set(items.flatMap((p) => Object.keys(p.specs))));
 
   return (
     <div className="py-12 md:py-16">
@@ -47,7 +45,11 @@ function ComparePage() {
                   {items.map((p) => (
                     <th key={p.id} className="min-w-[240px] p-4 text-left align-top">
                       <div className="relative overflow-hidden rounded-2xl bg-surface ring-1 ring-border">
-                        <img src={p.images[0]} alt="" className="aspect-square w-full object-cover" />
+                        <img
+                          src={p.images[0]}
+                          alt=""
+                          className="aspect-square w-full object-cover"
+                        />
                         <button
                           onClick={() => remove(p.id)}
                           className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/85 text-foreground backdrop-blur"
@@ -69,15 +71,18 @@ function ComparePage() {
               </thead>
               <tbody>
                 {[
-                  ["Рейтинг", (p: typeof items[number]) => `${p.rating} (${p.reviewsCount})`],
-                  ["Наличие", (p: typeof items[number]) => (p.inStock ? "В наличии" : "Под заказ")],
-                  ["Категория", (p: typeof items[number]) => p.categoryLabel],
+                  ["Рейтинг", (p: (typeof items)[number]) => `${p.rating} (${p.reviewsCount})`],
+                  [
+                    "Наличие",
+                    (p: (typeof items)[number]) => (p.inStock ? "В наличии" : "Под заказ"),
+                  ],
+                  ["Категория", (p: (typeof items)[number]) => p.categoryLabel],
                 ].map(([label, fn]) => (
                   <tr key={label as string} className="border-t border-border">
                     <td className="py-4 pr-4 text-ink-soft">{label as string}</td>
                     {items.map((p) => (
                       <td key={p.id} className="px-4 py-4 font-medium text-foreground">
-                        {(fn as (p: typeof items[number]) => string)(p)}
+                        {(fn as (p: (typeof items)[number]) => string)(p)}
                       </td>
                     ))}
                   </tr>

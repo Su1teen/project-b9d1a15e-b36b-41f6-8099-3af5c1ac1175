@@ -4,20 +4,15 @@ import { useState } from "react";
 import { Container } from "./Container";
 import { useCart } from "@/store/cart";
 import { useFavorites } from "@/store/favorites";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { catalogGroups } from "@/data/categories";
 
 const navLinks = [
   { to: "/catalog", label: "Каталог" },
-  { to: "/category/lighting", label: "Освещение" },
-  { to: "/category/audio", label: "Акустика" },
-  { to: "/category/climate", label: "Климат" },
+  { to: "/category/lighting", label: "Свет" },
+  { to: "/category/control", label: "Управление" },
   { to: "/category/security", label: "Безопасность" },
+  { to: "/category/hubs-networking", label: "B2B" },
 ];
 
 export function Navbar() {
@@ -37,9 +32,7 @@ export function Navbar() {
             <nav className="hidden items-center gap-7 lg:flex">
               {navLinks.map((link) => {
                 const active =
-                  link.to === "/catalog"
-                    ? pathname === "/catalog"
-                    : pathname === link.to;
+                  link.to === "/catalog" ? pathname === "/catalog" : pathname === link.to;
                 return (
                   <Link
                     key={link.to}
@@ -51,6 +44,42 @@ export function Navbar() {
                   </Link>
                 );
               })}
+              <div className="group relative">
+                <button className="text-[13px] font-medium tracking-tight text-ink-soft transition-colors hover:text-foreground">
+                  Категории
+                </button>
+                <div className="pointer-events-none absolute left-1/2 top-full w-[720px] -translate-x-1/2 pt-5 opacity-0 transition-all duration-300 group-hover:pointer-events-auto group-hover:opacity-100">
+                  <div className="grid grid-cols-2 gap-8 rounded-3xl border border-border bg-background/95 p-8 shadow-2xl shadow-foreground/5 backdrop-blur-xl">
+                    {catalogGroups.map((group) => (
+                      <div key={group.slug}>
+                        <div className="mb-4">
+                          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-ink-soft">
+                            {group.shortTitle}
+                          </p>
+                          <p className="mt-1 font-serif text-xl text-foreground">{group.title}</p>
+                        </div>
+                        <div className="grid gap-2">
+                          {group.categories.map((category) => (
+                            <Link
+                              key={category.slug}
+                              to="/category/$slug"
+                              params={{ slug: category.slug }}
+                              className="rounded-2xl border border-transparent p-3 transition-colors hover:border-border hover:bg-surface"
+                            >
+                              <span className="block text-sm font-medium text-foreground">
+                                {category.shortTitle}
+                              </span>
+                              <span className="mt-1 line-clamp-1 block text-xs text-ink-soft">
+                                {category.tagline}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </nav>
           </div>
 
@@ -114,6 +143,26 @@ export function Navbar() {
                     >
                       {link.label}
                     </Link>
+                  ))}
+                  {catalogGroups.map((group) => (
+                    <div key={group.slug} className="mt-4">
+                      <p className="px-3 text-[10px] font-medium uppercase tracking-[0.22em] text-ink-soft">
+                        {group.title}
+                      </p>
+                      <div className="mt-2 grid gap-1">
+                        {group.categories.map((category) => (
+                          <Link
+                            key={category.slug}
+                            to="/category/$slug"
+                            params={{ slug: category.slug }}
+                            onClick={() => setMobileOpen(false)}
+                            className="rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface"
+                          >
+                            {category.title}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                   <div className="my-3 h-px bg-border" />
                   <Link

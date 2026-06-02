@@ -23,7 +23,10 @@ function AddressesPage() {
   return (
     <div className="space-y-4">
       {addresses.map((a) => (
-        <article key={a.title} className="flex items-start gap-5 rounded-3xl border border-border p-6">
+        <article
+          key={a.title}
+          className="flex items-start gap-5 rounded-3xl border border-border p-6"
+        >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-foreground">
             <MapPin className="size-4" />
           </div>

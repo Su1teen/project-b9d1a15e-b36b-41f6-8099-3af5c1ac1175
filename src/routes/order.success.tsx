@@ -18,13 +18,10 @@ function OrderSuccessPage() {
             <Check className="size-7" strokeWidth={1.8} />
           </div>
           <span className="eyebrow mt-8 block">Заказ № {orderNumber}</span>
-          <h1 className="mt-4 font-serif text-5xl text-foreground">
-            Спасибо. Заказ принят.
-          </h1>
+          <h1 className="mt-4 font-serif text-5xl text-foreground">Спасибо. Заказ принят.</h1>
           <p className="mt-5 text-base text-ink-soft text-pretty">
-            Менеджер свяжется с вами в течение 30 минут, чтобы подтвердить
-            детали доставки и время монтажа. Мы написали на ваш email — там
-            детали и трек-номер.
+            Менеджер свяжется с вами в течение 30 минут, чтобы подтвердить детали доставки и время
+            монтажа. Мы написали на ваш email — там детали и трек-номер.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link

@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { TrustSignals } from "@/components/site/TrustSignals";
 import { products } from "@/data/products";
-import { categories } from "@/data/categories";
+import { catalogGroups, categories } from "@/data/categories";
 import { formatPrice } from "@/lib/format";
 import heroHub from "@/assets/hero-hub.jpg";
 import detail from "@/assets/detail-material.jpg";
@@ -30,7 +30,40 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const featured = products.find((p) => p.featured && p.isNew) ?? products[0];
-  const recommended = products.slice(0, 8);
+  const recommended = products.filter((p) => p.featured || p.oldPrice || p.isNew).slice(0, 8);
+  const bundle = products
+    .filter((p) =>
+      [
+        "philips-hue-white-color-ambiance-a19",
+        "aqara-smart-wall-switch-h1-eu-no-neutral",
+        "aqara-presence-sensor-fp2",
+        "aqara-hub-m3",
+      ].includes(p.slug),
+    )
+    .slice(0, 4);
+  const promoBanners = [
+    {
+      label: "Клубная цена",
+      title: "Световой пакет −14%",
+      text: "Лампы, лента и выключатель для первой комнаты.",
+      to: "/category/lighting",
+      image: products.find((p) => p.slug === "aqara-led-strip-t1")?.images[0],
+    },
+    {
+      label: "B2B ядро",
+      title: "Хабы и сеть для объекта",
+      text: "Matter, Thread, PoE и Wi‑Fi 7 в одной инженерной подборке.",
+      to: "/category/hubs-networking",
+      image: products.find((p) => p.slug === "aqara-hub-m3")?.images[0],
+    },
+    {
+      label: "Вместе покупают",
+      title: "Безопасность без шума",
+      text: "Замок, камера, видеозвонок и датчики в едином сценарии.",
+      to: "/category/security",
+      image: products.find((p) => p.slug === "aqara-smart-door-lock-a100-zigbee")?.images[0],
+    },
+  ];
 
   return (
     <div>
@@ -44,9 +77,8 @@ function HomePage() {
                 Архитектура вашего комфорта
               </h1>
               <p className="mt-8 max-w-[42ch] text-base text-ink-soft text-pretty md:text-lg">
-                Тихая, точная и продуманная экосистема устройств умного дома.
-                Матовый алюминий, локальная автоматизация и спокойный сценарий
-                жизни.
+                Тихая, точная и продуманная экосистема устройств умного дома. Матовый алюминий,
+                локальная автоматизация и спокойный сценарий жизни.
               </p>
               <div className="mt-10 flex flex-wrap items-center gap-3">
                 <Link
@@ -93,9 +125,7 @@ function HomePage() {
                 <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-4">
                   <div className="rounded-2xl bg-background/85 px-4 py-3 backdrop-blur-md">
                     <span className="eyebrow">{featured.collection}</span>
-                    <p className="mt-1 text-sm font-medium text-foreground">
-                      {featured.name}
-                    </p>
+                    <p className="mt-1 text-sm font-medium text-foreground">{featured.name}</p>
                   </div>
                   <div className="rounded-2xl bg-background/85 px-4 py-3 text-right backdrop-blur-md">
                     <span className="eyebrow">от</span>
@@ -110,6 +140,39 @@ function HomePage() {
         </Container>
       </section>
 
+      {/* COMMERCIAL BANNERS */}
+      <section className="-mt-12 pb-20">
+        <Container>
+          <div className="grid gap-4 lg:grid-cols-3">
+            {promoBanners.map((banner, index) => (
+              <Link
+                key={banner.title}
+                to={banner.to}
+                className="group relative min-h-[220px] overflow-hidden rounded-3xl border border-border bg-surface p-7 transition-transform duration-500 hover:-translate-y-1"
+              >
+                <div className="relative z-10 max-w-[16rem]">
+                  <span className="eyebrow">
+                    {String(index + 1).padStart(2, "0")} · {banner.label}
+                  </span>
+                  <h3 className="mt-4 font-serif text-3xl leading-tight text-foreground">
+                    {banner.title}
+                  </h3>
+                  <p className="mt-3 text-sm text-ink-soft text-pretty">{banner.text}</p>
+                </div>
+                {banner.image && (
+                  <img
+                    src={banner.image}
+                    alt=""
+                    loading="lazy"
+                    className="absolute -bottom-5 -right-5 h-44 w-44 object-contain opacity-80 transition-transform duration-700 group-hover:scale-105"
+                  />
+                )}
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
       {/* CATEGORIES */}
       <section className="bg-surface/50 py-24">
         <Container>
@@ -117,13 +180,22 @@ function HomePage() {
             eyebrow="Категории"
             title={
               <>
-                Четыре опоры <em className="font-serif italic">тихого</em> дома
+                Две группы, тринадцать <em className="font-serif italic">направлений</em>
               </>
             }
             actionLabel="Все категории"
             actionTo="/catalog"
           />
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="mb-8 grid gap-4 md:grid-cols-2">
+            {catalogGroups.map((group) => (
+              <div key={group.slug} className="rounded-3xl border border-border bg-background p-6">
+                <span className="eyebrow">{group.shortTitle}</span>
+                <h3 className="mt-3 font-serif text-3xl text-foreground">{group.title}</h3>
+                <p className="mt-3 max-w-[48ch] text-sm text-ink-soft">{group.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {categories.map((cat, idx) => (
               <Link
                 key={cat.slug}
@@ -170,8 +242,8 @@ function HomePage() {
                 Каждая деталь рассчитана и проверена 240 часов.
               </h2>
               <p className="mt-6 max-w-[44ch] text-base text-ink-soft text-pretty">
-                От толщины стенок корпуса до угла фаски на основании — мы
-                одержимы деталями, которые делают продукт долговечным.
+                От толщины стенок корпуса до угла фаски на основании — мы одержимы деталями, которые
+                делают продукт долговечным.
               </p>
 
               <dl className="mt-10 divide-y divide-border border-y border-border">
@@ -221,6 +293,25 @@ function HomePage() {
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
+          <div className="mt-14 rounded-3xl border border-border bg-surface/60 p-6 md:p-8">
+            <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <div>
+                <span className="eyebrow">Вместе с этим покупают</span>
+                <h3 className="mt-3 font-serif text-3xl text-foreground">
+                  Пакет «Свет + присутствие»
+                </h3>
+              </div>
+              <p className="max-w-[42ch] text-sm text-ink-soft">
+                История заказов показывает: лампы чаще всего дополняют настенным выключателем,
+                mmWave-датчиком и хабом Matter.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {bundle.map((p) => (
+                <ProductCard key={p.id} product={p} size="compact" />
+              ))}
+            </div>
+          </div>
         </Container>
       </section>
 
@@ -229,54 +320,63 @@ function HomePage() {
         <Container>
           <SectionHeading
             eyebrow="Сценарии"
-            title={<>Один дом — десятки <em className="font-serif italic">настроений</em></>}
-            description="Готовые сценарии автоматизации, которые включаются одной командой."
+            title={
+              <>
+                Один дом — десятки <em className="font-serif italic">настроений</em>
+              </>
+            }
+            description="Компактные сценарии: атмосфера видна сразу, но фотографии больше не перетягивают на себя весь экран."
           />
-        </Container>
-        <div className="flex gap-6 overflow-x-auto px-6 pb-6 md:px-8 scrollbar-hide">
-          {[
-            {
-              img: lifestyleLiving,
-              title: "Гостиная · Вечер",
-              text: "Плавное диммирование света, мягкий звук и тёплый климат — одной командой.",
-            },
-            {
-              img: lifestyleBedroom,
-              title: "Спальня · Глубокий сон",
-              text: "Шторы по расписанию, тихий климат и мониторинг качества воздуха.",
-            },
-            {
-              img: lifestyleKitchen,
-              title: "Кухня · Утро",
-              text: "Кофе, освещение и шторы запускаются по будильнику.",
-            },
-          ].map((scene) => (
-            <div key={scene.title} className="min-w-[360px] flex-shrink-0 md:min-w-[480px]">
-              <div className="overflow-hidden rounded-2xl bg-surface ring-1 ring-border">
-                <img
-                  src={scene.img}
-                  alt={scene.title}
-                  loading="lazy"
-                  className="aspect-[16/10] w-full object-cover"
-                />
-              </div>
-              <div className="mt-5 flex items-start justify-between gap-4">
-                <div>
-                  <h4 className="font-serif text-xl text-foreground">{scene.title}</h4>
-                  <p className="mt-2 max-w-[44ch] text-sm text-ink-soft text-pretty">
-                    {scene.text}
-                  </p>
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              {
+                img: lifestyleLiving,
+                title: "Гостиная · Вечер",
+                text: "Диммирование, Sonos и теплый климат одной командой.",
+                stat: "7 устройств",
+              },
+              {
+                img: lifestyleBedroom,
+                title: "Спальня · Сон",
+                text: "Шторы, влажность, ночник и тихая безопасность.",
+                stat: "5 сценариев",
+              },
+              {
+                img: lifestyleKitchen,
+                title: "Кухня · Утро",
+                text: "Кофе, свет, проветривание и голосовая сводка Алисы.",
+                stat: "08:00",
+              },
+            ].map((scene) => (
+              <Link
+                key={scene.title}
+                to="/catalog"
+                className="group grid grid-cols-[112px_1fr] gap-4 rounded-3xl border border-border bg-surface/60 p-4 transition-colors hover:bg-surface"
+              >
+                <div className="overflow-hidden rounded-2xl bg-background">
+                  <img
+                    src={scene.img}
+                    alt={scene.title}
+                    loading="lazy"
+                    className="aspect-square h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
                 </div>
-                <Link
-                  to="/catalog"
-                  className="shrink-0 text-xs font-medium uppercase tracking-widest text-ink-soft hover:text-foreground"
-                >
-                  Подобрать →
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+                <div className="flex min-w-0 flex-col justify-between py-1">
+                  <div>
+                    <span className="eyebrow">{scene.stat}</span>
+                    <h4 className="mt-2 font-serif text-xl text-foreground">{scene.title}</h4>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-soft text-pretty">
+                      {scene.text}
+                    </p>
+                  </div>
+                  <span className="mt-4 text-xs font-medium uppercase tracking-widest text-ink-soft">
+                    Подобрать →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Container>
       </section>
 
       {/* TRUST */}

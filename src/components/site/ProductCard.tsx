@@ -26,22 +26,22 @@ export function ProductCard({
         className="block"
         aria-label={product.name}
       >
-        <div className="relative aspect-square overflow-hidden rounded-2xl bg-surface ring-1 ring-border">
+        <div className="relative aspect-square overflow-hidden rounded-2xl bg-[linear-gradient(135deg,var(--surface),var(--background))] ring-1 ring-border">
           <img
             src={product.images[0]}
             alt={product.name}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+            className="h-full w-full object-contain p-8 transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           />
 
           <div className="absolute left-3 top-3 flex flex-col gap-1.5">
             {product.isNew && (
-              <span className="rounded-full bg-foreground px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-background">
+              <span className="rounded-full bg-foreground/90 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-background shadow-sm backdrop-blur">
                 Новинка
               </span>
             )}
             {product.oldPrice && (
-              <span className="rounded-full bg-accent px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-accent-foreground">
+              <span className="rounded-full bg-accent/90 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-accent-foreground shadow-sm backdrop-blur">
                 −{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
               </span>
             )}
@@ -59,10 +59,7 @@ export function ProductCard({
               isFav && "opacity-100",
             )}
           >
-            <Heart
-              className={cn("size-[16px]", isFav && "fill-foreground")}
-              strokeWidth={1.5}
-            />
+            <Heart className={cn("size-[16px]", isFav && "fill-foreground")} strokeWidth={1.5} />
           </button>
 
           <button
@@ -94,17 +91,27 @@ export function ProductCard({
         <div className={cn("mt-4 flex flex-col gap-1.5", size === "compact" && "mt-3")}>
           <div className="flex items-baseline justify-between gap-3">
             <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-ink-soft">
-              {product.categoryLabel}
+              {product.brand} · {product.categoryLabel}
             </span>
             <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-ink-soft">
               {product.inStock ? "В наличии" : "Под заказ"}
             </span>
           </div>
-          <h3 className="text-[15px] font-medium tracking-tight text-foreground">
-            {product.name}
-          </h3>
+          <h3 className="text-[15px] font-medium tracking-tight text-foreground">{product.name}</h3>
           {size === "default" && (
-            <p className="text-[13px] text-ink-soft line-clamp-1">{product.tagline}</p>
+            <>
+              <p className="text-[13px] text-ink-soft line-clamp-1">{product.tagline}</p>
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {[product.subcategoryLabel, ...product.protocols.slice(0, 2)].map((label) => (
+                  <span
+                    key={label}
+                    className="rounded-full border border-border bg-background/70 px-2 py-0.5 text-[10px] text-ink-soft"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </>
           )}
           <div className="mt-1 flex items-baseline justify-between gap-3">
             <div className="flex items-baseline gap-2">

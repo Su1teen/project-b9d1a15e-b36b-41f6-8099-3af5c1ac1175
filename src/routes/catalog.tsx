@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Container } from "@/components/site/Container";
 import { ProductCard } from "@/components/site/ProductCard";
 import { products } from "@/data/products";
-import { categories } from "@/data/categories";
+import { catalogGroups, categories } from "@/data/categories";
 
 export const Route = createFileRoute("/catalog")({
   head: () => ({
@@ -11,8 +11,7 @@ export const Route = createFileRoute("/catalog")({
       { title: "Каталог · AURA" },
       {
         name: "description",
-        content:
-          "Полный каталог устройств умного дома: освещение, акустика, климат, безопасность.",
+        content: "Полный каталог устройств умного дома: освещение, акустика, климат, безопасность.",
       },
       { property: "og:title", content: "Каталог · AURA" },
     ],
@@ -21,15 +20,36 @@ export const Route = createFileRoute("/catalog")({
 });
 
 type Sort = "popular" | "price-asc" | "price-desc" | "new";
+type Budget = "all" | "under-50" | "50-150" | "150-plus";
 
 function CatalogPage() {
+  const [group, setGroup] = useState<string | null>(null);
   const [cat, setCat] = useState<string | null>(null);
+  const [brand, setBrand] = useState<string | null>(null);
+  const [protocol, setProtocol] = useState<string | null>(null);
+  const [functionality, setFunctionality] = useState<string | null>(null);
+  const [budget, setBudget] = useState<Budget>("all");
   const [sort, setSort] = useState<Sort>("popular");
   const [inStockOnly, setInStockOnly] = useState(false);
 
+  const brands = useMemo(() => [...new Set(products.map((p) => p.brand))].sort(), []);
+  const protocols = useMemo(() => [...new Set(products.flatMap((p) => p.protocols))].sort(), []);
+  const functions = useMemo(() => [...new Set(products.flatMap((p) => p.functions))].sort(), []);
+  const visibleCategories = useMemo(
+    () => categories.filter((category) => !group || category.group === group),
+    [group],
+  );
+
   const list = useMemo(() => {
     let arr = [...products];
+    if (group) arr = arr.filter((p) => p.group === group);
     if (cat) arr = arr.filter((p) => p.category === cat);
+    if (brand) arr = arr.filter((p) => p.brand === brand);
+    if (protocol) arr = arr.filter((p) => p.protocols.includes(protocol));
+    if (functionality) arr = arr.filter((p) => p.functions.includes(functionality));
+    if (budget === "under-50") arr = arr.filter((p) => p.price < 50000);
+    if (budget === "50-150") arr = arr.filter((p) => p.price >= 50000 && p.price <= 150000);
+    if (budget === "150-plus") arr = arr.filter((p) => p.price > 150000);
     if (inStockOnly) arr = arr.filter((p) => p.inStock);
     switch (sort) {
       case "price-asc":
@@ -45,7 +65,7 @@ function CatalogPage() {
         arr.sort((a, b) => b.rating - a.rating);
     }
     return arr;
-  }, [cat, sort, inStockOnly]);
+  }, [brand, budget, cat, functionality, group, inStockOnly, protocol, sort]);
 
   return (
     <div className="py-12 md:py-16">
@@ -56,14 +76,55 @@ function CatalogPage() {
             Все устройства Aura
           </h1>
           <p className="max-w-[52ch] text-base text-ink-soft text-pretty">
-            Полный ассортимент премиальной экосистемы умного дома — от ламп до
-            хабов управления и систем безопасности.
+            Полный ассортимент премиальной экосистемы: B2C-устройства для дома и B2B-инфраструктура
+            для профессиональных инсталляций.
           </p>
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            {[
+              ["42", "реальных устройства"],
+              ["13", "категорий"],
+              ["2", "группы B2C/B2B"],
+            ].map(([value, label]) => (
+              <div key={label} className="rounded-2xl border border-border bg-surface/60 p-4">
+                <p className="font-serif text-3xl text-foreground">{value}</p>
+                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-ink-soft">{label}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="flex flex-col gap-12 lg:flex-row">
           <aside className="w-full lg:w-64 lg:shrink-0">
             <div className="lg:sticky lg:top-24">
+              <div className="mb-8">
+                <h4 className="eyebrow mb-4">Группа</h4>
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => {
+                      setGroup(null);
+                      setCat(null);
+                    }}
+                    data-active={!group}
+                    className="text-left text-sm text-ink-soft transition-colors hover:text-foreground data-[active=true]:font-medium data-[active=true]:text-foreground"
+                  >
+                    Все направления
+                  </button>
+                  {catalogGroups.map((item) => (
+                    <button
+                      key={item.slug}
+                      onClick={() => {
+                        setGroup(item.slug);
+                        setCat(null);
+                      }}
+                      data-active={group === item.slug}
+                      className="text-left text-sm text-ink-soft transition-colors hover:text-foreground data-[active=true]:font-medium data-[active=true]:text-foreground"
+                    >
+                      {item.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="mb-8">
                 <h4 className="eyebrow mb-4">Сортировка</h4>
                 <div className="flex flex-col gap-2">
@@ -97,7 +158,7 @@ function CatalogPage() {
                   >
                     Все
                   </button>
-                  {categories.map((c) => (
+                  {visibleCategories.map((c) => (
                     <button
                       key={c.slug}
                       onClick={() => setCat(c.slug)}
@@ -105,6 +166,90 @@ function CatalogPage() {
                       className="text-left text-sm text-ink-soft transition-colors hover:text-foreground data-[active=true]:text-foreground data-[active=true]:font-medium"
                     >
                       {c.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h4 className="eyebrow mb-4">Бренды</h4>
+                <div className="flex max-h-52 flex-col gap-2 overflow-y-auto pr-1">
+                  <button
+                    onClick={() => setBrand(null)}
+                    data-active={!brand}
+                    className="text-left text-sm text-ink-soft transition-colors hover:text-foreground data-[active=true]:font-medium data-[active=true]:text-foreground"
+                  >
+                    Все бренды
+                  </button>
+                  {brands.map((item) => (
+                    <button
+                      key={item}
+                      onClick={() => setBrand(item)}
+                      data-active={brand === item}
+                      className="text-left text-sm text-ink-soft transition-colors hover:text-foreground data-[active=true]:font-medium data-[active=true]:text-foreground"
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h4 className="eyebrow mb-4">Протоколы</h4>
+                <div className="flex flex-wrap gap-2">
+                  {["Все", ...protocols].map((item) => {
+                    const value = item === "Все" ? null : item;
+                    return (
+                      <button
+                        key={item}
+                        onClick={() => setProtocol(value)}
+                        data-active={protocol === value}
+                        className="rounded-full border border-border px-3 py-1.5 text-xs text-ink-soft transition-colors hover:text-foreground data-[active=true]:border-foreground data-[active=true]:text-foreground"
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h4 className="eyebrow mb-4">Функционал</h4>
+                <div className="flex flex-wrap gap-2">
+                  {["Все", ...functions.slice(0, 18)].map((item) => {
+                    const value = item === "Все" ? null : item;
+                    return (
+                      <button
+                        key={item}
+                        onClick={() => setFunctionality(value)}
+                        data-active={functionality === value}
+                        className="rounded-full border border-border px-3 py-1.5 text-xs text-ink-soft transition-colors hover:text-foreground data-[active=true]:border-foreground data-[active=true]:text-foreground"
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h4 className="eyebrow mb-4">Бюджет</h4>
+                <div className="flex flex-col gap-2">
+                  {(
+                    [
+                      ["all", "Любой бюджет"],
+                      ["under-50", "до 50 000 ₸"],
+                      ["50-150", "50 000–150 000 ₸"],
+                      ["150-plus", "от 150 000 ₸"],
+                    ] as [Budget, string][]
+                  ).map(([key, label]) => (
+                    <button
+                      key={key}
+                      onClick={() => setBudget(key)}
+                      data-active={budget === key}
+                      className="text-left text-sm text-ink-soft transition-colors hover:text-foreground data-[active=true]:font-medium data-[active=true]:text-foreground"
+                    >
+                      {label}
                     </button>
                   ))}
                 </div>
@@ -126,6 +271,33 @@ function CatalogPage() {
           </aside>
 
           <div className="flex-1">
+            <div className="mb-8 flex flex-wrap items-center gap-2">
+              {[group, cat, brand, protocol, functionality, budget !== "all" ? budget : null]
+                .filter(Boolean)
+                .map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-ink-soft"
+                  >
+                    {item}
+                  </span>
+                ))}
+              {(group || cat || brand || protocol || functionality || budget !== "all") && (
+                <button
+                  onClick={() => {
+                    setGroup(null);
+                    setCat(null);
+                    setBrand(null);
+                    setProtocol(null);
+                    setFunctionality(null);
+                    setBudget("all");
+                  }}
+                  className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground"
+                >
+                  Сбросить фильтры
+                </button>
+              )}
+            </div>
             {list.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-border bg-surface/60 p-16 text-center">
                 <p className="text-sm text-ink-soft">
