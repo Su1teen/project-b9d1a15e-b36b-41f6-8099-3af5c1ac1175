@@ -52,9 +52,7 @@ function CategoryPage() {
             <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/80">
               Категория · {items.length} устройств
             </span>
-            <h1 className="mt-3 font-serif text-5xl text-white md:text-7xl">
-              {category.title}
-            </h1>
+            <h1 className="mt-3 font-serif text-5xl text-white md:text-7xl">{category.title}</h1>
             <p className="mt-4 max-w-[52ch] text-base text-white/85 text-pretty">
               {category.description}
             </p>
@@ -64,6 +62,16 @@ function CategoryPage() {
 
       <section className="py-16">
         <Container>
+          <div className="mb-10 flex flex-wrap gap-2">
+            {category.subcategories.map((subcategory) => (
+              <span
+                key={subcategory.slug}
+                className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-ink-soft"
+              >
+                {subcategory.title}
+              </span>
+            ))}
+          </div>
           {items.length === 0 ? (
             <p className="py-24 text-center text-sm text-ink-soft">
               В этой категории пока нет товаров.

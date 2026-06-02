@@ -18,8 +18,8 @@ function NotFoundComponent() {
       <span className="eyebrow">404</span>
       <h1 className="mt-4 font-serif text-6xl text-foreground">Страница не найдена</h1>
       <p className="mt-4 max-w-md text-sm text-ink-soft text-pretty">
-        Возможно, она была перемещена или ещё не опубликована. Вернитесь на главную или
-        откройте каталог.
+        Возможно, она была перемещена или ещё не опубликована. Вернитесь на главную или откройте
+        каталог.
       </p>
       <div className="mt-8 flex gap-3">
         <Link
@@ -45,9 +45,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
       <span className="eyebrow">Ошибка</span>
-      <h1 className="mt-4 font-serif text-5xl text-foreground">
-        Эта страница не загрузилась
-      </h1>
+      <h1 className="mt-4 font-serif text-5xl text-foreground">Эта страница не загрузилась</h1>
       <p className="mt-4 max-w-md text-sm text-ink-soft">
         Что-то пошло не так. Попробуйте обновить или вернуться на главную.
       </p>

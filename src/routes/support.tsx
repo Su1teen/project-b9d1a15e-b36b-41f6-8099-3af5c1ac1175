@@ -49,8 +49,8 @@ function SupportPage() {
             Мы рядом, когда нужно
           </h1>
           <p className="mt-6 max-w-[52ch] text-base text-ink-soft text-pretty">
-            Сертифицированные инженеры Aura отвечают на вопросы в чате, по
-            телефону и в мессенджерах — круглосуточно.
+            Сертифицированные инженеры Aura отвечают на вопросы в чате, по телефону и в мессенджерах
+            — круглосуточно.
           </p>
         </div>
 
@@ -71,9 +71,7 @@ function SupportPage() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <span className="eyebrow">FAQ</span>
-            <h2 className="mt-3 font-serif text-4xl text-foreground">
-              Частые вопросы
-            </h2>
+            <h2 className="mt-3 font-serif text-4xl text-foreground">Частые вопросы</h2>
           </div>
           <div className="lg:col-span-8">
             <Accordion type="single" collapsible className="w-full">

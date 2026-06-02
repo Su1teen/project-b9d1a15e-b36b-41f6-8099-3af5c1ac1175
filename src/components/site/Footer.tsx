@@ -11,8 +11,8 @@ export function Footer() {
               AURA
             </Link>
             <p className="mt-6 max-w-[34ch] text-sm text-ink-soft text-pretty">
-              Спокойная архитектура умного дома. Официальный дистрибьютор Aura
-              Smart Systems в Республике Казахстан.
+              Спокойная архитектура умного дома. Официальный дистрибьютор Aura Smart Systems в
+              Республике Казахстан.
             </p>
             <p className="mt-6 text-xs text-ink-soft">
               Алматы, проспект Аль-Фараби, 17

@@ -39,9 +39,7 @@ export function TrustSignals() {
       {items.map(({ icon: Icon, title, text }) => (
         <div key={title} className="bg-background p-8">
           <Icon className="size-6 text-foreground" strokeWidth={1.4} />
-          <h4 className="mt-6 text-base font-medium tracking-tight text-foreground">
-            {title}
-          </h4>
+          <h4 className="mt-6 text-base font-medium tracking-tight text-foreground">{title}</h4>
           <p className="mt-2 text-sm text-ink-soft text-pretty">{text}</p>
         </div>
       ))}
