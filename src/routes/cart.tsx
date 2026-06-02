@@ -34,9 +34,7 @@ function CartPage() {
       <Container>
         <div className="mb-10 border-b border-border pb-8">
           <span className="eyebrow">Шаг 1 из 3</span>
-          <h1 className="mt-3 font-serif text-5xl text-foreground md:text-6xl">
-            Корзина
-          </h1>
+          <h1 className="mt-3 font-serif text-5xl text-foreground md:text-6xl">Корзина</h1>
         </div>
 
         {lines.length === 0 ? (

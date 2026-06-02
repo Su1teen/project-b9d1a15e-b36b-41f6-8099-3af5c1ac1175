@@ -1,6 +1,16 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { Heart, Check, ShoppingBag, Truck, ShieldCheck, Wrench, RotateCcw, Star, Scale } from "lucide-react";
+import {
+  Heart,
+  Check,
+  ShoppingBag,
+  Truck,
+  ShieldCheck,
+  Wrench,
+  RotateCcw,
+  Star,
+  Scale,
+} from "lucide-react";
 import { Container } from "@/components/site/Container";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
@@ -123,9 +133,7 @@ function ProductPage() {
                 <h1 className="mt-3 font-serif text-4xl leading-[1.05] text-foreground md:text-5xl">
                   {product.name}
                 </h1>
-                <p className="mt-4 text-lg text-ink-soft text-pretty">
-                  {product.tagline}
-                </p>
+                <p className="mt-4 text-lg text-ink-soft text-pretty">{product.tagline}</p>
 
                 <div className="mt-6 flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-1.5">
@@ -140,13 +148,9 @@ function ProductPage() {
                         )}
                       />
                     ))}
-                    <span className="ml-1 text-foreground tabular-nums">
-                      {product.rating}
-                    </span>
+                    <span className="ml-1 text-foreground tabular-nums">{product.rating}</span>
                   </div>
-                  <span className="text-ink-soft">
-                    {product.reviewsCount} отзывов
-                  </span>
+                  <span className="text-ink-soft">{product.reviewsCount} отзывов</span>
                   <span className="text-ink-soft">·</span>
                   <span className={product.inStock ? "text-foreground" : "text-ink-soft"}>
                     {product.inStock ? "В наличии" : "Под заказ"}
@@ -164,8 +168,8 @@ function ProductPage() {
                   )}
                 </div>
                 <p className="mt-2 text-xs text-ink-soft">
-                  Или от {formatPrice(Math.round(product.price / 12))} / мес ·
-                  Kaspi Рассрочка 0-0-12
+                  Или от {formatPrice(Math.round(product.price / 12))} / мес · Kaspi Рассрочка
+                  0-0-12
                 </p>
 
                 <div className="mt-8 flex items-stretch gap-3">
@@ -176,9 +180,7 @@ function ProductPage() {
                     >
                       −
                     </button>
-                    <span className="w-8 text-center text-sm font-medium tabular-nums">
-                      {qty}
-                    </span>
+                    <span className="w-8 text-center text-sm font-medium tabular-nums">{qty}</span>
                     <button
                       onClick={() => setQty((q) => q + 1)}
                       className="px-4 text-lg text-ink-soft hover:text-foreground"
@@ -254,9 +256,7 @@ function ProductPage() {
               <h2 className="mt-4 font-serif text-4xl text-foreground text-balance">
                 {product.tagline}
               </h2>
-              <p className="mt-6 text-base text-ink-soft text-pretty">
-                {product.description}
-              </p>
+              <p className="mt-6 text-base text-ink-soft text-pretty">{product.description}</p>
             </div>
             <div className="lg:col-span-7">
               <div className="grid grid-cols-1 gap-px overflow-hidden rounded-3xl bg-border md:grid-cols-2">
@@ -297,7 +297,10 @@ function ProductPage() {
           {tab === "specs" && (
             <dl className="grid grid-cols-1 divide-y divide-border border-y border-border md:grid-cols-2 md:divide-y-0 md:gap-x-16">
               {Object.entries(product.specs).map(([k, v]) => (
-                <div key={k} className="flex items-baseline justify-between gap-6 border-b border-border py-4">
+                <div
+                  key={k}
+                  className="flex items-baseline justify-between gap-6 border-b border-border py-4"
+                >
                   <dt className="text-sm text-ink-soft">{k}</dt>
                   <dd className="text-sm font-medium text-foreground">{v}</dd>
                 </div>
@@ -384,16 +387,10 @@ function ProductPage() {
                 text: "Возникли вопросы по интеграции с Apple Home — ответили в течение 5 минут. Сервис вне всяких похвал.",
               },
             ].map((r) => (
-              <article
-                key={r.name}
-                className="rounded-3xl border border-border bg-background p-7"
-              >
+              <article key={r.name} className="rounded-3xl border border-border bg-background p-7">
                 <div className="flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="size-3.5 fill-foreground text-foreground"
-                    />
+                    <Star key={i} className="size-3.5 fill-foreground text-foreground" />
                   ))}
                 </div>
                 <h4 className="mt-4 font-medium text-foreground">{r.title}</h4>

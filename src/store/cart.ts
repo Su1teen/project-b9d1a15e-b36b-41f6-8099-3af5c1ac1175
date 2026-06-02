@@ -24,9 +24,7 @@ export const useCart = create<CartState>()(
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.productId === productId
-                  ? { ...i, quantity: i.quantity + quantity }
-                  : i,
+                i.productId === productId ? { ...i, quantity: i.quantity + quantity } : i,
               ),
             };
           }
@@ -41,9 +39,7 @@ export const useCart = create<CartState>()(
           items:
             quantity <= 0
               ? state.items.filter((i) => i.productId !== productId)
-              : state.items.map((i) =>
-                  i.productId === productId ? { ...i, quantity } : i,
-                ),
+              : state.items.map((i) => (i.productId === productId ? { ...i, quantity } : i)),
         })),
       clear: () => set({ items: [] }),
     }),

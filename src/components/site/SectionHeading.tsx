@@ -30,9 +30,7 @@ export function SectionHeading({
           {title}
         </h2>
         {description && (
-          <p className="mt-4 max-w-[48ch] text-base text-ink-soft text-pretty">
-            {description}
-          </p>
+          <p className="mt-4 max-w-[48ch] text-base text-ink-soft text-pretty">{description}</p>
         )}
       </div>
       {actionLabel && actionTo && (

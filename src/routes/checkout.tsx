@@ -63,9 +63,7 @@ function CheckoutPage() {
               <div
                 className={cn(
                   "flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium",
-                  step >= s.n
-                    ? "bg-foreground text-background"
-                    : "bg-surface text-ink-soft",
+                  step >= s.n ? "bg-foreground text-background" : "bg-surface text-ink-soft",
                 )}
               >
                 {step > s.n ? <Check className="size-4" /> : s.n}
@@ -78,9 +76,7 @@ function CheckoutPage() {
               >
                 {s.label}
               </span>
-              {i < steps.length - 1 && (
-                <span className="mx-2 h-px w-10 bg-border" />
-              )}
+              {i < steps.length - 1 && <span className="mx-2 h-px w-10 bg-border" />}
             </div>
           ))}
         </div>
@@ -186,9 +182,7 @@ function CheckoutPage() {
                         <div
                           className={cn(
                             "h-5 w-5 rounded-full border-2",
-                            payment === key
-                              ? "border-foreground bg-foreground"
-                              : "border-border",
+                            payment === key ? "border-foreground bg-foreground" : "border-border",
                           )}
                         />
                       </button>
@@ -224,7 +218,11 @@ function CheckoutPage() {
                     <div className="flex justify-between">
                       <dt className="text-ink-soft">Оплата</dt>
                       <dd className="capitalize">
-                        {payment === "kaspi" ? "Kaspi" : payment === "card" ? "Карта" : "При получении"}
+                        {payment === "kaspi"
+                          ? "Kaspi"
+                          : payment === "card"
+                            ? "Карта"
+                            : "При получении"}
                       </dd>
                     </div>
                   </dl>
@@ -249,11 +247,7 @@ function CheckoutPage() {
                 {lines.map(({ item, product }) => (
                   <li key={item.productId} className="flex gap-3">
                     <div className="h-14 w-14 overflow-hidden rounded-xl bg-background ring-1 ring-border">
-                      <img
-                        src={product.images[0]}
-                        alt=""
-                        className="h-full w-full object-cover"
-                      />
+                      <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
                     </div>
                     <div className="flex flex-1 items-start justify-between gap-3 text-sm">
                       <div>
