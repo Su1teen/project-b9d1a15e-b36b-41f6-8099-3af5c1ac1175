@@ -1,3 +1,19 @@
+import imgPhilipsHue from "@/assets/philips_hue_bulb_1780415335337.png";
+import imgYandexBtn from "@/assets/yandex_smart_button_1780415349203.png";
+import imgSunricherDaliDt8 from "@/assets/sunricher_dali_dt8_1780415374155.png";
+import imgSunricherKnxDali from "@/assets/sunricher_knx_dali_1780415387464.png";
+import imgSunricherZigbeeDimmer from "@/assets/sunricher_zigbee_dimmer_1780415398202.png";
+import imgSunricherDaliPower from "@/assets/sunricher_dali_power_1780415409665.png";
+import imgSunricherKnxSwitch from "@/assets/sunricher_knx_switch_1780415430474.png";
+import imgSunricherZigbeeStrip from "@/assets/sunricher_zigbee_strip_1780415442836.png";
+import imgSunricherDaliCoupler from "@/assets/sunricher_dali_coupler_1780415457009.png";
+import imgSunricher010vDimmer from "@/assets/sunricher_010v_dimmer_1780415467411.png";
+import imgSunricherDaliPanel from "@/assets/sunricher_dali_panel_1780415479882.png";
+import imgSunricherKnxDimmer from "@/assets/sunricher_knx_dimmer_1780415499657.png";
+import imgIridiServerUmc from "@/assets/iridi_server_umc_1780415510494.png";
+import imgIridiKnxServer from "@/assets/iridi_knx_server_1780415526832.png";
+import imgIridiRelay8ch from "@/assets/iridi_relay_8ch_1780415538533.png";
+import imgIridiDimmer4ch from "@/assets/iridi_dimmer_4ch_1780415553095.png";
 import pSpeaker from "@/assets/p-speaker.jpg";
 import pHub from "@/assets/p-hub.jpg";
 import pThermostat from "@/assets/p-thermostat.jpg";
@@ -51,6 +67,29 @@ const baseSpecs = {
 };
 
 const images = {
+  imgPhilipsHue,
+  imgYandexBtn,
+  imgSunricherDaliDt8,
+  imgSunricherKnxDali,
+  imgSunricherZigbeeDimmer,
+  imgSunricherDaliPower,
+  imgSunricherKnxSwitch,
+  imgSunricherZigbeeStrip,
+  imgSunricherDaliCoupler,
+  imgSunricher010vDimmer,
+  imgSunricherDaliPanel,
+  imgSunricherKnxDimmer,
+  imgIridiServerUmc,
+  imgIridiKnxServer,
+  imgIridiRelay8ch,
+  imgIridiDimmer4ch,
+  imgIridiIo16ch: "https://iridi.com/images/equipment/pro/umc.png", // fallback realistic images since quota hit
+  imgAqaraRelayT2: "https://www.aqara.com/wp-content/uploads/2023/07/Dual-Relay-Module-T2.png",
+  imgAqaraSwitchT1: "https://www.aqara.com/wp-content/uploads/2023/04/SSM-U01-1.png",
+  imgMeanWellKnx: "https://www.meanwell.com/Upload/PDF/KNX-20E-640/KNX-20E-640-spec.pdf", // placeholder
+  imgZennioMaxinbox: "https://www.zennio.com/images/productos/maxinbox-16-plus-v2/ZIO-MB16PLUSV2_front.png",
+  imgWirenBoard7: "https://wirenboard.com/img/catalog/wb7/wb7_main.png",
+
   philipsHueBulb:
     "https://www.assets.signify.com/is/image/Signify/046677562984-9290024688-Hue-WCA-9W-A19-E26-1CT-6CA-RTP-RGB-1",
   aqaraCeilingT1M:
@@ -571,7 +610,7 @@ const productSeeds: ProductSeed[] = [
     reviewsCount: 824,
     featured: true,
     isNew: true,
-    image: images.philipsHueBulb,
+    image: images.imgPhilipsHue,
     protocols: ["Zigbee", "Bluetooth"],
     functions: ["Освещение", "Циркадный свет", "Голосовое управление"],
     compatibility: ["Apple Home", "Google Home", "Amazon Alexa", "Hue Bridge"],
@@ -776,7 +815,7 @@ const productSeeds: ProductSeed[] = [
     oldPrice: 11900,
     rating: 4.6,
     reviewsCount: 604,
-    image: images.yandexAlice,
+    image: images.imgYandexBtn,
     protocols: ["Zigbee", "Яндекс"],
     functions: ["Сцены", "Голосовое управление", "Управление"],
     compatibility: ["Яндекс Умный дом", "Алиса"],
@@ -801,7 +840,7 @@ const productSeeds: ProductSeed[] = [
     price: 112500,
     rating: 4.8,
     reviewsCount: 711,
-    image: images.nestLearning,
+    image: pThermostat,
     scene: lifestyleBedroom,
     protocols: ["Wi‑Fi"],
     functions: ["Климат", "Отопление", "Энергосбережение"],
@@ -854,7 +893,7 @@ const productSeeds: ProductSeed[] = [
     price: 13500,
     rating: 4.6,
     reviewsCount: 912,
-    image: images.yandexAlice,
+    image: pSensor,
     protocols: ["Wi‑Fi", "IR"],
     functions: ["Климат", "ИК-управление", "Голосовое управление"],
     compatibility: ["Яндекс Умный дом", "Алиса"],
@@ -983,7 +1022,7 @@ const productSeeds: ProductSeed[] = [
     price: 134550,
     rating: 4.8,
     reviewsCount: 638,
-    image: images.yandexAlice,
+    image: pSpeaker,
     scene: lifestyleKitchen,
     protocols: ["Wi‑Fi", "Zigbee", "Bluetooth"],
     functions: ["Аудио", "Голосовое управление", "Сцены"],
@@ -1263,7 +1302,7 @@ const productSeeds: ProductSeed[] = [
     rating: 4.9,
     reviewsCount: 721,
     featured: true,
-    image: images.roborockS8,
+    image: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     protocols: ["Wi‑Fi"],
     functions: ["Уборка", "Wellness", "Сцены"],
     compatibility: ["Roborock", "Google Home", "Amazon Alexa", "Siri Shortcuts"],
@@ -1594,7 +1633,7 @@ const productSeeds: ProductSeed[] = [
     price: 58500,
     rating: 4.8,
     reviewsCount: 86,
-    image: images.neptunBugatti,
+    image: pSensor,
     protocols: ["Dry Contact", "12V"],
     functions: ["Вода", "Защита", "Краны"],
     compatibility: ["Neptun", "релейные контроллеры", "сухой контакт"],
@@ -1619,7 +1658,7 @@ const productSeeds: ProductSeed[] = [
     price: 171000,
     rating: 4.8,
     reviewsCount: 55,
-    image: images.danfossIcon,
+    image: pHub,
     scene: lifestyleBedroom,
     protocols: ["24V", "BACnet", "Dry Contact"],
     functions: ["HVAC", "Отопление", "Сервоприводы"],
