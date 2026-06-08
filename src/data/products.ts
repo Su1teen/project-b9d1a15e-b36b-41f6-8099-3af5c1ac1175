@@ -28,6 +28,7 @@ import lifestyleLiving from "@/assets/lifestyle-living.jpg";
 import lifestyleBedroom from "@/assets/lifestyle-bedroom.jpg";
 import lifestyleKitchen from "@/assets/lifestyle-kitchen.jpg";
 import type { CatalogGroupSlug } from "@/data/categories";
+import { csvProductSeeds } from "@/data/csvProducts";
 
 export type Product = {
   id: string;
@@ -43,6 +44,7 @@ export type Product = {
   subcategory: string;
   subcategoryLabel: string;
   price: number;
+  subscriptionPrice: number;
   oldPrice?: number;
   rating: number;
   reviewsCount: number;
@@ -560,7 +562,7 @@ const legacyProducts = [
   },
 ];
 
-type ProductSeed = {
+export type ProductSeed = {
   slug: string;
   name: string;
   brand: string;
@@ -1670,10 +1672,13 @@ const productSeeds: ProductSeed[] = [
   },
 ];
 
-export const products: Product[] = productSeeds.map((product, index) => ({
+const allProductSeeds: ProductSeed[] = [...productSeeds, ...csvProductSeeds];
+
+export const products: Product[] = allProductSeeds.map((product, index) => ({
   ...product,
   id: `p-${String(index + 1).padStart(3, "0")}`,
   inStock: product.inStock ?? true,
+  subscriptionPrice: Math.round(product.price * 0.9),
   images: productImages(product.image, product.scene),
   specs: {
     ...baseSpecs,

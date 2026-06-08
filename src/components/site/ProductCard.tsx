@@ -113,16 +113,19 @@ export function ProductCard({
               </div>
             </>
           )}
-          <div className="mt-1 flex items-baseline justify-between gap-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-[15px] font-medium tracking-tight tabular-nums text-foreground">
+          <div className="mt-1 flex items-end justify-between gap-3">
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-2">
+                <span className="text-[15px] font-medium tracking-tight tabular-nums text-foreground">
+                  {formatPrice(product.subscriptionPrice)}
+                </span>
+                <span className="backdrop-blur-sm bg-foreground/5 border border-foreground/[0.08] rounded-full px-2 py-0.5 text-[10px] text-ink-soft tracking-wide">
+                  по подписке
+                </span>
+              </div>
+              <span className="text-[11px] text-ink-soft tabular-nums">
                 {formatPrice(product.price)}
               </span>
-              {product.oldPrice && (
-                <span className="text-[12px] text-ink-soft line-through tabular-nums">
-                  {formatPrice(product.oldPrice)}
-                </span>
-              )}
             </div>
             <div className="flex items-center gap-1 text-[12px] tabular-nums text-ink-soft">
               <span className="size-1 rounded-full bg-foreground" />

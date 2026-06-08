@@ -8,6 +8,7 @@ export function SectionHeading({
   actionLabel,
   actionTo,
   align = "row",
+  centered = false,
 }: {
   eyebrow?: string;
   title: ReactNode;
@@ -15,16 +16,19 @@ export function SectionHeading({
   actionLabel?: string;
   actionTo?: string;
   align?: "row" | "column";
+  centered?: boolean;
 }) {
   return (
     <div
       className={
-        align === "row"
-          ? "mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end"
-          : "mb-12 flex flex-col gap-3"
+        centered
+          ? "mb-12 flex flex-col items-center justify-center gap-3"
+          : align === "row"
+            ? "mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end"
+            : "mb-12 flex flex-col items-start gap-3"
       }
     >
-      <div className="max-w-2xl">
+      <div className={centered ? "max-w-2xl mx-auto flex flex-col items-center text-center" : "max-w-2xl"}>
         {eyebrow && <span className="eyebrow block">{eyebrow}</span>}
         <h2 className="mt-3 font-serif text-4xl leading-[1.05] text-foreground md:text-5xl">
           {title}

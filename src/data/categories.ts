@@ -65,6 +65,7 @@ export const categories: Category[] = [
       { slug: "wall-panels", title: "Настенные смарт-панели" },
       { slug: "wireless-buttons", title: "Беспроводные кнопки и кубики" },
       { slug: "rotary-dimmers", title: "Поворотные регуляторы" },
+      { slug: "wired-panels", title: "Проводные панели" },
     ],
   },
   {
@@ -134,6 +135,7 @@ export const categories: Category[] = [
       { slug: "smoke-gas-sensors", title: "Датчики дыма, CO и газа" },
       { slug: "light-uv-sensors", title: "Датчики освещенности и УФ" },
       { slug: "temperature-sensors", title: "Датчики температуры и влажности" },
+      { slug: "sensors", title: "Датчики умного дома" },
     ],
   },
   {
@@ -185,6 +187,8 @@ export const categories: Category[] = [
       { slug: "din-dimmers", title: "DIN-реечные диммеры" },
       { slug: "curtain-actuators", title: "DIN-модули управления шторами" },
       { slug: "smart-breakers", title: "Умные автоматы защиты" },
+      { slug: "pwm-controllers", title: "ШИМ контроллеры" },
+      { slug: "embedded-dimmers", title: "Встраиваемые диммеры" },
     ],
   },
   {
@@ -201,6 +205,9 @@ export const categories: Category[] = [
       { slug: "modbus-converters", title: "Конвертеры Modbus" },
       { slug: "dali-gateways", title: "Шлюзы DALI" },
       { slug: "interface-converters", title: "Преобразователи интерфейсов" },
+      { slug: "dali-masters", title: "DALI мастера" },
+      { slug: "protocol-converters", title: "Конвертеры протоколов" },
+      { slug: "wireless-gateways", title: "Шлюзы и конвертеры" },
     ],
   },
   {

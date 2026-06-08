@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as DeliveryRouteImport } from './routes/delivery'
 import { Route as CompareRouteImport } from './routes/compare'
@@ -28,6 +29,11 @@ import { Route as AccountAddressesRouteImport } from './routes/account.addresses
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubscriptionsRoute = SubscriptionsRouteImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/compare': typeof CompareRoute
   '/delivery': typeof DeliveryRoute
   '/favorites': typeof FavoritesRoute
+  '/subscriptions': typeof SubscriptionsRoute
   '/support': typeof SupportRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/orders': typeof AccountOrdersRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/compare': typeof CompareRoute
   '/delivery': typeof DeliveryRoute
   '/favorites': typeof FavoritesRoute
+  '/subscriptions': typeof SubscriptionsRoute
   '/support': typeof SupportRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/orders': typeof AccountOrdersRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/compare': typeof CompareRoute
   '/delivery': typeof DeliveryRoute
   '/favorites': typeof FavoritesRoute
+  '/subscriptions': typeof SubscriptionsRoute
   '/support': typeof SupportRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/orders': typeof AccountOrdersRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/delivery'
     | '/favorites'
+    | '/subscriptions'
     | '/support'
     | '/account/addresses'
     | '/account/orders'
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/delivery'
     | '/favorites'
+    | '/subscriptions'
     | '/support'
     | '/account/addresses'
     | '/account/orders'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/delivery'
     | '/favorites'
+    | '/subscriptions'
     | '/support'
     | '/account/addresses'
     | '/account/orders'
@@ -214,6 +226,7 @@ export interface RootRouteChildren {
   CompareRoute: typeof CompareRoute
   DeliveryRoute: typeof DeliveryRoute
   FavoritesRoute: typeof FavoritesRoute
+  SubscriptionsRoute: typeof SubscriptionsRoute
   SupportRoute: typeof SupportRoute
   CategorySlugRoute: typeof CategorySlugRoute
   OrderSuccessRoute: typeof OrderSuccessRoute
@@ -227,6 +240,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subscriptions': {
+      id: '/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/subscriptions'
+      preLoaderRoute: typeof SubscriptionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -354,6 +374,7 @@ const rootRouteChildren: RootRouteChildren = {
   CompareRoute: CompareRoute,
   DeliveryRoute: DeliveryRoute,
   FavoritesRoute: FavoritesRoute,
+  SubscriptionsRoute: SubscriptionsRoute,
   SupportRoute: SupportRoute,
   CategorySlugRoute: CategorySlugRoute,
   OrderSuccessRoute: OrderSuccessRoute,

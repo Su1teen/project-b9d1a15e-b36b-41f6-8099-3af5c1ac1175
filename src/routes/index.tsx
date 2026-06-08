@@ -4,14 +4,13 @@ import { Container } from "@/components/site/Container";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { TrustSignals } from "@/components/site/TrustSignals";
+import { ScenariosCarousel } from "@/components/site/ScenariosCarousel";
 import { products } from "@/data/products";
 import { catalogGroups, categories } from "@/data/categories";
 import { formatPrice } from "@/lib/format";
 import heroHub from "@/assets/hero-hub.jpg";
 import detail from "@/assets/detail-material.jpg";
-import lifestyleLiving from "@/assets/lifestyle-living.jpg";
-import lifestyleBedroom from "@/assets/lifestyle-bedroom.jpg";
-import lifestyleKitchen from "@/assets/lifestyle-kitchen.jpg";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,6 +45,7 @@ function HomePage() {
       label: "Клубная цена",
       title: "Световой пакет −14%",
       text: "Лампы, лента и выключатель для первой комнаты.",
+      badge: "Доступно с Pro и Ultra",
       to: "/category/lighting",
       image: products.find((p) => p.slug === "aqara-led-strip-t1")?.images[0],
     },
@@ -53,6 +53,7 @@ function HomePage() {
       label: "B2B ядро",
       title: "Хабы и сеть для объекта",
       text: "Matter, Thread, PoE и Wi‑Fi 7 в одной инженерной подборке.",
+      badge: "Инженерный аудит Ultra",
       to: "/category/hubs-networking",
       image: products.find((p) => p.slug === "aqara-hub-m3")?.images[0],
     },
@@ -60,6 +61,7 @@ function HomePage() {
       label: "Вместе покупают",
       title: "Безопасность без шума",
       text: "Замок, камера, видеозвонок и датчики в едином сценарии.",
+      badge: "Спеццена для Starter",
       to: "/category/security",
       image: products.find((p) => p.slug === "aqara-smart-door-lock-a100-zigbee")?.images[0],
     },
@@ -68,7 +70,7 @@ function HomePage() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative pt-12 pb-24 md:pt-16 md:pb-32">
+      <section className="relative pt-8 pb-16 md:pt-10 md:pb-20">
         <Container>
           <div className="grid grid-cols-12 gap-8 items-end">
             <div className="col-span-12 lg:col-span-5">
@@ -139,7 +141,8 @@ function HomePage() {
           </div>
         </Container>
       </section>
-
+      {/* SCENARIOS CAROUSEL */}
+      <ScenariosCarousel />
       {/* COMMERCIAL BANNERS */}
       <section className="-mt-12 pb-20">
         <Container>
@@ -151,10 +154,15 @@ function HomePage() {
                 className="group relative min-h-[220px] overflow-hidden rounded-3xl border border-border bg-surface p-7 transition-transform duration-500 hover:-translate-y-1"
               >
                 <div className="relative z-10 max-w-[16rem]">
-                  <span className="eyebrow">
-                    {String(index + 1).padStart(2, "0")} · {banner.label}
-                  </span>
-                  <h3 className="mt-4 font-serif text-3xl leading-tight text-foreground">
+                  <div className="mb-4 flex flex-wrap items-center gap-2">
+                    <span className="eyebrow">
+                      {String(index + 1).padStart(2, "0")} · {banner.label}
+                    </span>
+                    <span className="inline-flex rounded-full border border-white/20 bg-foreground/5 px-2.5 py-0.5 text-[10px] font-medium text-ink-soft shadow-inner backdrop-blur-md dark:border-white/10 dark:bg-white/5">
+                      {banner.badge}
+                    </span>
+                  </div>
+                  <h3 className="font-serif text-3xl leading-tight text-foreground">
                     {banner.title}
                   </h3>
                   <p className="mt-3 text-sm text-ink-soft text-pretty">{banner.text}</p>
@@ -169,6 +177,15 @@ function HomePage() {
                 )}
               </Link>
             ))}
+          </div>
+          <div className="mt-10 flex justify-center">
+            <Link
+              to="/subscriptions"
+              className="inline-flex h-12 items-center gap-2 rounded-full border border-border bg-surface px-8 text-sm font-medium text-foreground transition-all duration-300 hover:scale-[1.02] hover:bg-background hover:shadow-sm"
+            >
+              Узнать больше о подписках и ценах
+              <ArrowRight className="size-4" strokeWidth={1.8} />
+            </Link>
           </div>
         </Container>
       </section>
@@ -222,7 +239,7 @@ function HomePage() {
         </Container>
       </section>
 
-      {/* FEATURED EDITORIAL */}
+      {/* FEATURED EDITORIAL 
       <section className="py-32">
         <Container>
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
@@ -273,7 +290,7 @@ function HomePage() {
           </div>
         </Container>
       </section>
-
+*/}
       {/* RECOMMENDED GRID */}
       <section className="py-24">
         <Container>
@@ -315,69 +332,7 @@ function HomePage() {
         </Container>
       </section>
 
-      {/* LIFESTYLE SCENES */}
-      <section className="overflow-hidden py-24">
-        <Container>
-          <SectionHeading
-            eyebrow="Сценарии"
-            title={
-              <>
-                Один дом — десятки <em className="font-serif italic">настроений</em>
-              </>
-            }
-            description="Компактные сценарии: атмосфера видна сразу, но фотографии больше не перетягивают на себя весь экран."
-          />
-          <div className="grid gap-4 md:grid-cols-3">
-            {[
-              {
-                img: lifestyleLiving,
-                title: "Гостиная · Вечер",
-                text: "Диммирование, Sonos и теплый климат одной командой.",
-                stat: "7 устройств",
-              },
-              {
-                img: lifestyleBedroom,
-                title: "Спальня · Сон",
-                text: "Шторы, влажность, ночник и тихая безопасность.",
-                stat: "5 сценариев",
-              },
-              {
-                img: lifestyleKitchen,
-                title: "Кухня · Утро",
-                text: "Кофе, свет, проветривание и голосовая сводка Алисы.",
-                stat: "08:00",
-              },
-            ].map((scene) => (
-              <Link
-                key={scene.title}
-                to="/catalog"
-                className="group grid grid-cols-[112px_1fr] gap-4 rounded-3xl border border-border bg-surface/60 p-4 transition-colors hover:bg-surface"
-              >
-                <div className="overflow-hidden rounded-2xl bg-background">
-                  <img
-                    src={scene.img}
-                    alt={scene.title}
-                    loading="lazy"
-                    className="aspect-square h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
-                <div className="flex min-w-0 flex-col justify-between py-1">
-                  <div>
-                    <span className="eyebrow">{scene.stat}</span>
-                    <h4 className="mt-2 font-serif text-xl text-foreground">{scene.title}</h4>
-                    <p className="mt-2 text-sm leading-relaxed text-ink-soft text-pretty">
-                      {scene.text}
-                    </p>
-                  </div>
-                  <span className="mt-4 text-xs font-medium uppercase tracking-widest text-ink-soft">
-                    Подобрать →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </section>
+
 
       {/* TRUST */}
       <section className="py-24">

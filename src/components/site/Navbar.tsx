@@ -13,6 +13,7 @@ const navLinks = [
   { to: "/category/control", label: "Управление" },
   { to: "/category/security", label: "Безопасность" },
   { to: "/category/hubs-networking", label: "B2B" },
+  { to: "/subscriptions", label: "Подписка" },
 ];
 
 export function Navbar() {

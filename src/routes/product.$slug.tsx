@@ -96,11 +96,11 @@ function ProductPage() {
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
             {/* GALLERY */}
             <div className="lg:col-span-7">
-              <div className="overflow-hidden rounded-3xl bg-surface ring-1 ring-border">
+              <div className="overflow-hidden rounded-3xl bg-white ring-1 ring-border">
                 <img
                   src={product.images[activeImg]}
                   alt={product.name}
-                  className="aspect-square w-full object-cover"
+                  className="aspect-square w-full object-contain p-8 mix-blend-multiply"
                 />
               </div>
               <div className="mt-4 flex gap-3 overflow-x-auto scrollbar-hide">
@@ -157,20 +157,23 @@ function ProductPage() {
                   </span>
                 </div>
 
-                <div className="mt-8 flex items-baseline gap-3">
-                  <span className="font-serif text-4xl text-foreground tabular-nums">
-                    {formatPrice(product.price)}
-                  </span>
-                  {product.oldPrice && (
-                    <span className="text-base text-ink-soft line-through tabular-nums">
-                      {formatPrice(product.oldPrice)}
+                <div className="mt-8">
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-serif text-4xl text-foreground tabular-nums">
+                      {formatPrice(product.subscriptionPrice)}
                     </span>
-                  )}
+                    <span className="inline-flex items-center gap-1 rounded-full border border-foreground/[0.08] bg-foreground/[0.04] px-3 py-1 text-[11px] font-medium tracking-wide text-ink-soft backdrop-blur-sm">
+                      по подписке
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-ink-soft tabular-nums">
+                    Розничная цена: {formatPrice(product.price)}
+                  </p>
+                  <p className="mt-1 text-xs text-ink-soft">
+                    Или от {formatPrice(Math.round(product.subscriptionPrice / 12))} / мес · Kaspi Рассрочка
+                    0-0-12
+                  </p>
                 </div>
-                <p className="mt-2 text-xs text-ink-soft">
-                  Или от {formatPrice(Math.round(product.price / 12))} / мес · Kaspi Рассрочка
-                  0-0-12
-                </p>
 
                 <div className="mt-8 flex items-stretch gap-3">
                   <div className="flex h-12 items-center rounded-full border border-border bg-background">
