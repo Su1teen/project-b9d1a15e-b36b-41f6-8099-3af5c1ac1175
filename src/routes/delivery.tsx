@@ -27,10 +27,10 @@ function DeliveryPage() {
             <h2 className="font-serif text-3xl text-foreground">Доставка</h2>
             <dl className="mt-8 divide-y divide-border border-y border-border">
               {[
-                ["По Алматы", "Сегодня или завтра · 2 500 ₸"],
+                ["По Астане", "Сегодня или завтра · 2 500 ₸"],
                 ["По Казахстану", "2–4 дня · от 3 500 ₸"],
                 ["Бесплатно", "При заказе от 80 000 ₸"],
-                ["Самовывоз", "Шоурум Аль-Фараби 17"],
+                ["Самовывоз", "Шоурум ул. Достык, 16"],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between py-4 text-sm">
                   <dt className="text-ink-soft">{k}</dt>

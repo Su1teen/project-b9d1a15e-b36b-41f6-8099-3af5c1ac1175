@@ -20,8 +20,9 @@ function SubscriptionsPage() {
 
   const plans = [
     {
-      id: "starter",
-      name: "Smart Starter",
+      id: "silver",
+      name: "Silver",
+      gradientClass: "bg-clip-text text-transparent bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]",
       tagline: "Базовый комфорт для квартир",
       monthly: "4 900",
       yearly: "3 900",
@@ -31,12 +32,13 @@ function SubscriptionsPage() {
         "Базовые сценарии автоматизации освещения",
         "Онлайн-техподдержка 24/7",
       ],
-      cta: "Активировать Starter",
+      cta: "Активировать Silver",
       popular: false,
     },
     {
-      id: "pro",
-      name: "Smart Pro",
+      id: "gold",
+      name: "Gold",
+      gradientClass: "bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-yellow-200 to-yellow-600 drop-shadow-[0_0_12px_rgba(234,179,8,0.35)]",
       tagline: "Профессиональная экосистема",
       monthly: "12 900",
       yearly: "9 900",
@@ -47,12 +49,13 @@ function SubscriptionsPage() {
         "Ускоренная b2b-доставка по всему Казахстану",
         "Прямая интеграция с Яндекс Алисой и Apple HomeKit",
       ],
-      cta: "Перейти на Pro",
+      cta: "Перейти на Gold",
       popular: true,
     },
     {
-      id: "ultra",
-      name: "Smart Ultra",
+      id: "platinum",
+      name: "Platinum",
+      gradientClass: "bg-clip-text text-transparent bg-gradient-to-r from-slate-400 via-slate-200 to-slate-600 drop-shadow-[0_0_14px_rgba(148,163,184,0.4)]",
       tagline: "Инженерный максимум для бизнеса",
       monthly: "29 900",
       yearly: "23 900",
@@ -63,7 +66,7 @@ function SubscriptionsPage() {
         "Замена брака день-в-день из резервного фонда компании",
         "Ранний доступ к тестированию новых линеек Sunricher",
       ],
-      cta: "Подключить Ultra",
+      cta: "Подключить Platinum",
       popular: false,
     },
   ];
@@ -135,7 +138,7 @@ function SubscriptionsPage() {
               )}
 
               <div className="mb-6">
-                <h3 className="font-serif text-2xl text-foreground">{plan.name}</h3>
+                <h3 className={cn("font-serif text-3xl font-bold tracking-wide", plan.gradientClass)}>{plan.name}</h3>
                 <p className="mt-2 text-sm text-ink-soft">{plan.tagline}</p>
               </div>
 

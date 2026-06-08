@@ -27,7 +27,7 @@ function AccountIndex() {
             ["Имя", "Айгерим Касенова"],
             ["Email", "aigerim@aura.kz"],
             ["Телефон", "+7 707 000 12 34"],
-            ["Город", "Алматы"],
+            ["Город", "Астана"],
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between border-b border-border py-3 text-sm">
               <dt className="text-ink-soft">{k}</dt>

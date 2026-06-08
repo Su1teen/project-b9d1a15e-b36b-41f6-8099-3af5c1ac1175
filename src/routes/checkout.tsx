@@ -1,11 +1,60 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, ShieldCheck } from "lucide-react";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Container } from "@/components/site/Container";
 import { useCart } from "@/store/cart";
 import { products } from "@/data/products";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
+
+// --- TYPES & HELPERS ---
+export type SubscriptionTier = "none" | "silver" | "gold" | "platinum";
+
+export function calculateTotals(
+  lines: { product: any; item: { quantity: number; productId: string } }[],
+  tier: SubscriptionTier,
+  deliveryType: "courier" | "pickup"
+) {
+  const subtotal = lines.reduce((acc, l) => acc + l.product.price * l.item.quantity, 0);
+
+  // Guest calculations (Baseline)
+  const guestVat = subtotal * 0.16; // 16% VAT
+  const guestDelivery = deliveryType === "courier" ? subtotal * 0.10 : 0; // +10% shipping
+  const guestTotal = subtotal + guestVat + guestDelivery;
+
+  // Subscriber logic
+  let discountPercent = 0;
+  let hasFreeDelivery = false;
+
+  if (tier === "silver") {
+    discountPercent = 0.10; // 10% discount
+  } else if (tier === "gold") {
+    discountPercent = 0.15; // 15% discount
+    hasFreeDelivery = true;
+  } else if (tier === "platinum") {
+    discountPercent = 0.20; // 20% discount
+    hasFreeDelivery = true;
+  }
+
+  const subscriberDiscount = subtotal * discountPercent;
+  const finalSubtotal = subtotal - subscriberDiscount;
+  const finalVat = finalSubtotal * 0.16;
+  const finalDelivery = hasFreeDelivery || deliveryType === "pickup" ? 0 : finalSubtotal * 0.10;
+  const finalTotal = finalSubtotal + finalVat + finalDelivery;
+
+  const savings = guestTotal - finalTotal;
+
+  return {
+    baseSubtotal: subtotal,
+    vat: tier === "none" ? guestVat : finalVat,
+    delivery: tier === "none" ? guestDelivery : finalDelivery,
+    discount: subscriberDiscount,
+    total: tier === "none" ? guestTotal : finalTotal,
+    guestTotal,
+    savings,
+  };
+}
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -18,16 +67,20 @@ function CheckoutPage() {
   const items = useCart((s) => s.items);
   const clear = useCart((s) => s.clear);
   const navigate = Route.useNavigate();
+  
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [delivery, setDelivery] = useState<"courier" | "pickup">("courier");
-  const [payment, setPayment] = useState<"kaspi" | "card" | "cash">("kaspi");
+  const [payment, setPayment] = useState<"kaspi" | "card" | "paypal" | "cash">("kaspi");
+  
+  // Using a local state to let user test the 'Smart Savings' logic during checkout.
+  // In a real app, this would be fetched from user/auth store.
+  const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("gold");
 
   const lines = items
     .map((i) => ({ item: i, product: products.find((p) => p.id === i.productId)! }))
     .filter((l) => l.product);
-  const subtotal = lines.reduce((acc, l) => acc + l.product.price * l.item.quantity, 0);
-  const deliveryCost = subtotal >= 80000 || delivery === "pickup" ? 0 : 2500;
-  const total = subtotal + deliveryCost;
+
+  const totals = calculateTotals(lines, subscriptionTier, delivery);
 
   const steps = [
     { n: 1, label: "Доставка" },
@@ -111,7 +164,7 @@ function CheckoutPage() {
                     {(
                       [
                         ["courier", "Курьер по Казахстану", "2 500 ₸ · от 80 000 ₸ бесплатно"],
-                        ["pickup", "Самовывоз из шоурума", "Бесплатно · Алматы, Аль-Фараби 17"],
+                        ["pickup", "Самовывоз из шоурума", "Бесплатно · Астана, ул. Достык, 16"],
                       ] as const
                     ).map(([key, t, s]) => (
                       <button
@@ -134,7 +187,7 @@ function CheckoutPage() {
                       <input
                         placeholder="Город"
                         className="h-12 rounded-xl border border-border bg-background px-4 text-sm outline-none focus:border-foreground md:col-span-1"
-                        defaultValue="Алматы"
+                        defaultValue="Астана"
                       />
                       <input
                         placeholder="Адрес и квартира"
@@ -162,6 +215,7 @@ function CheckoutPage() {
                       [
                         ["kaspi", "Kaspi", "Через Kaspi.kz · Рассрочка 0-0-12 доступна"],
                         ["card", "Банковская карта", "Visa · MasterCard · UnionPay"],
+                        ["paypal", "PayPal", "Оплата картой или со счета PayPal"],
                         ["cash", "При получении", "Наличными или картой курьеру"],
                       ] as const
                     ).map(([key, t, s]) => (
@@ -222,61 +276,148 @@ function CheckoutPage() {
                           ? "Kaspi"
                           : payment === "card"
                             ? "Карта"
-                            : "При получении"}
+                            : payment === "paypal"
+                              ? "PayPal"
+                              : "При получении"}
                       </dd>
                     </div>
                   </dl>
                 </div>
-                <button
-                  onClick={() => {
-                    clear();
-                    navigate({ to: "/order/success" });
-                  }}
-                  className="h-12 w-full rounded-full bg-foreground text-sm font-medium text-background"
-                >
-                  Подтвердить заказ · {formatPrice(total)}
-                </button>
+                
+                {payment === "paypal" ? (
+                  <div className="mt-6 relative rounded-3xl border border-white/10 bg-surface p-8 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] backdrop-blur-md">
+                    {/* TODO: Replace with real credentials once business account is fully verified */}
+                    <PayPalScriptProvider options={{ clientId: "sb", currency: "USD" }}>
+                      <PayPalButtons 
+                        style={{ layout: "vertical", color: "silver", shape: "pill", label: "checkout" }}
+                        createOrder={(data, actions) => {
+                          return actions.order.create({
+                            intent: "CAPTURE",
+                            purchase_units: [{ 
+                              amount: { currency_code: "USD", value: Math.max(1, Math.round(totals.total / 450)).toString() } 
+                            }],
+                          });
+                        }}
+                        onApprove={async (data, actions) => {
+                          clear();
+                          navigate({ to: "/order/success" });
+                        }}
+                      />
+                    </PayPalScriptProvider>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      clear();
+                      navigate({ to: "/order/success" });
+                    }}
+                    className="h-12 w-full rounded-full bg-foreground text-sm font-medium text-background"
+                  >
+                    Подтвердить заказ · {formatPrice(totals.total)}
+                  </button>
+                )}
               </div>
             )}
           </div>
 
           <aside className="lg:col-span-5">
-            <div className="rounded-3xl border border-border bg-surface p-8 lg:sticky lg:top-24">
-              <h3 className="eyebrow">Заказ · {lines.length} позиций</h3>
-              <ul className="mt-6 space-y-4">
-                {lines.map(({ item, product }) => (
-                  <li key={item.productId} className="flex gap-3">
-                    <div className="h-14 w-14 overflow-hidden rounded-xl bg-background ring-1 ring-border">
-                      <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
-                    </div>
-                    <div className="flex flex-1 items-start justify-between gap-3 text-sm">
-                      <div>
-                        <p className="font-medium text-foreground">{product.name}</p>
-                        <p className="text-xs text-ink-soft">× {item.quantity}</p>
+            <div className="space-y-6 lg:sticky lg:top-24">
+              <div className="rounded-3xl border border-border bg-surface p-8">
+                <div className="flex items-center justify-between">
+                  <h3 className="eyebrow">Заказ · {lines.length} позиций</h3>
+                  <select 
+                    className="text-xs border border-border rounded-md bg-transparent p-1 text-ink-soft outline-none focus:border-foreground"
+                    value={subscriptionTier} 
+                    onChange={(e) => setSubscriptionTier(e.target.value as SubscriptionTier)}
+                  >
+                    <option value="none">Без подписки</option>
+                    <option value="silver">Silver</option>
+                    <option value="gold">Gold</option>
+                    <option value="platinum">Platinum</option>
+                  </select>
+                </div>
+                <ul className="mt-6 space-y-4">
+                  {lines.map(({ item, product }) => (
+                    <li key={item.productId} className="flex gap-3">
+                      <div className="h-14 w-14 overflow-hidden rounded-xl bg-background ring-1 ring-border">
+                        <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
                       </div>
-                      <span className="tabular-nums">
-                        {formatPrice(product.price * item.quantity)}
-                      </span>
+                      <div className="flex flex-1 items-start justify-between gap-3 text-sm">
+                        <div>
+                          <p className="font-medium text-foreground">{product.name}</p>
+                          <p className="text-xs text-ink-soft">× {item.quantity}</p>
+                        </div>
+                        <span className="tabular-nums">
+                          {formatPrice(product.price * item.quantity)}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <dl className="mt-6 space-y-2 border-t border-border pt-6 text-sm">
+                  <div className="flex justify-between">
+                    <dt className="text-ink-soft">Сумма товаров</dt>
+                    <dd className="tabular-nums">{formatPrice(totals.baseSubtotal)}</dd>
+                  </div>
+                  
+                  {subscriptionTier !== "none" && (
+                    <div className="flex justify-between">
+                      <dt className="text-ink-soft">Скидка ({subscriptionTier.toUpperCase()})</dt>
+                      <dd className="tabular-nums">− {formatPrice(totals.discount)}</dd>
                     </div>
-                  </li>
-                ))}
-              </ul>
-              <dl className="mt-6 space-y-2 border-t border-border pt-6 text-sm">
-                <div className="flex justify-between">
-                  <dt className="text-ink-soft">Подытог</dt>
-                  <dd className="tabular-nums">{formatPrice(subtotal)}</dd>
+                  )}
+
+                  <div className="flex justify-between">
+                    <dt className="text-ink-soft">НДС (16%)</dt>
+                    <dd className="tabular-nums">{formatPrice(totals.vat)}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-ink-soft">Доставка (+10%)</dt>
+                    <dd className="tabular-nums">
+                      {totals.delivery === 0 ? "Бесплатно" : formatPrice(totals.delivery)}
+                    </dd>
+                  </div>
+                </dl>
+                <div className="mt-4 flex items-baseline justify-between border-t border-border pt-4">
+                  <span className="text-sm font-medium text-foreground">Итоговая сумма</span>
+                  <span className="font-serif text-2xl tabular-nums">{formatPrice(totals.total)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-ink-soft">Доставка</dt>
-                  <dd className="tabular-nums">
-                    {deliveryCost === 0 ? "Бесплатно" : formatPrice(deliveryCost)}
-                  </dd>
-                </div>
-              </dl>
-              <div className="mt-4 flex items-baseline justify-between border-t border-border pt-4">
-                <span className="text-sm text-ink-soft">Итого</span>
-                <span className="font-serif text-2xl tabular-nums">{formatPrice(total)}</span>
               </div>
+
+              {/* Smart Savings Sidebar snippet */}
+              {subscriptionTier !== "none" && totals.savings > 0 && (
+                <div className="relative rounded-3xl border border-white/10 bg-surface/80 p-8 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] backdrop-blur-md">
+                  <div className="absolute -top-3.5 left-8 flex justify-center">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-foreground/10 bg-surface px-3 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur-md">
+                      <ShieldCheck className="size-3.5 fill-foreground text-foreground" />
+                      Smart Savings
+                    </span>
+                  </div>
+                  <h4 className="mt-2 font-serif text-xl text-foreground">Умная экономия</h4>
+                  <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+                    Будучи участником подписки <b>{subscriptionTier.toUpperCase()}</b>, вы избегаете дополнительных наценок на доставку и получаете закрытую скидку.
+                  </p>
+                  
+                  <dl className="mt-5 space-y-2 border-l-2 border-foreground/10 pl-4 text-sm">
+                    <div className="flex justify-between text-ink-soft">
+                      <dt>Без подписки:</dt>
+                      <dd className="line-through">{formatPrice(totals.guestTotal)}</dd>
+                    </div>
+                    <div className="flex justify-between font-medium text-foreground">
+                      <dt>С вашей подпиской:</dt>
+                      <dd>{formatPrice(totals.total)}</dd>
+                    </div>
+                  </dl>
+
+                  <div className="mt-6 rounded-2xl bg-foreground/5 p-4 text-center">
+                    <p className="text-sm font-medium text-foreground">
+                      Ваша экономия с подпиской:
+                      <br />
+                      <span className="text-lg font-serif">{formatPrice(totals.savings)}</span>
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </aside>
         </div>

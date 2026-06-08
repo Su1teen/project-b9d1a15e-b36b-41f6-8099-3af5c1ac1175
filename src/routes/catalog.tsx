@@ -71,7 +71,7 @@ function CatalogPage() {
     <div className="py-12 md:py-16">
       <Container>
         <div className="mb-12 flex flex-col gap-3 border-b border-border pb-10">
-          <span className="eyebrow">Каталог · {list.length} устройств</span>
+          <span className="eyebrow">Каталог</span>
           <h1 className="font-serif text-5xl leading-[1.05] text-foreground md:text-6xl">
             Все устройства Aura
           </h1>
@@ -79,23 +79,11 @@ function CatalogPage() {
             Полный ассортимент премиальной экосистемы: B2C-устройства для дома и B2B-инфраструктура
             для профессиональных инсталляций.
           </p>
-          <div className="mt-6 grid gap-3 md:grid-cols-3">
-            {[
-              ["42", "реальных устройства"],
-              ["13", "категорий"],
-              ["2", "группы B2C/B2B"],
-            ].map(([value, label]) => (
-              <div key={label} className="rounded-2xl border border-border bg-surface/60 p-4">
-                <p className="font-serif text-3xl text-foreground">{value}</p>
-                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-ink-soft">{label}</p>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div className="flex flex-col gap-12 lg:flex-row">
           <aside className="w-full lg:w-64 lg:shrink-0">
-            <div className="lg:sticky lg:top-24">
+            <div className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-4 lg:pb-8">
               <div className="mb-8">
                 <h4 className="eyebrow mb-4">Группа</h4>
                 <div className="flex flex-col gap-2">

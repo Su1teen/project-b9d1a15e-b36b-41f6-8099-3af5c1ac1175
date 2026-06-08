@@ -15,7 +15,7 @@ import detail from "@/assets/detail-material.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AURA — Маркетплейс умного дома · Алматы" },
+      { title: "AURA — Маркетплейс умного дома · Астана" },
       {
         name: "description",
         content:

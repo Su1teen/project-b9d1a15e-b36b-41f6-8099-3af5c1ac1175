@@ -221,7 +221,7 @@ function ProductPage() {
                 {/* TRUST mini */}
                 <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-border">
                   {[
-                    { icon: Truck, t: "Доставка завтра", s: "По Алматы" },
+                    { icon: Truck, t: "Доставка завтра", s: "По Астане" },
                     { icon: Wrench, t: "Бесплатный монтаж", s: "При заказе от 200 000 ₸" },
                     { icon: ShieldCheck, t: "Гарантия 3 года", s: "Сервис Aura" },
                     { icon: RotateCcw, t: "Возврат 30 дней", s: "Без вопросов" },
@@ -332,7 +332,7 @@ function ProductPage() {
             <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-border md:grid-cols-3">
               {[
                 {
-                  t: "Доставка по Алматы",
+                  t: "Доставка по Астане",
                   d: "Сегодня или завтра, в удобный двухчасовой интервал.",
                 },
                 {
@@ -370,7 +370,7 @@ function ProductPage() {
             {[
               {
                 name: "Алия К.",
-                city: "Алматы",
+                city: "Астана",
                 date: "12 апреля",
                 title: "Тихо и красиво",
                 text: "Долго выбирала между несколькими брендами — остановилась на Aura. Подача, упаковка, ощущение в руке — всё на уровне.",

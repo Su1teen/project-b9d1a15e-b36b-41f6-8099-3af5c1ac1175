@@ -8,13 +8,13 @@ export const Route = createFileRoute("/account/addresses")({
 const addresses = [
   {
     title: "Дом",
-    address: "Алматы, мкр. Самал-2, 36, кв. 18",
+    address: "Астана, ул. Достык, 16, кв. 18",
     note: "Звонить за 30 минут",
     default: true,
   },
   {
     title: "Офис",
-    address: "Алматы, БЦ «Esentai Tower», 7 этаж",
+    address: "Астана, БЦ «Водно-зеленый бульвар», 7 этаж",
     note: "Доставка только в будни",
   },
 ];
