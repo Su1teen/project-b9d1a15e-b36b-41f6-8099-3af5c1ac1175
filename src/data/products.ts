@@ -576,6 +576,7 @@ export type ProductSeed = {
   subcategoryLabel: string;
   price: number;
   oldPrice?: number;
+  subscriptionPrice?: number;
   rating: number;
   reviewsCount: number;
   inStock?: boolean;
@@ -1678,7 +1679,7 @@ export const products: Product[] = allProductSeeds.map((product, index) => ({
   ...product,
   id: `p-${String(index + 1).padStart(3, "0")}`,
   inStock: product.inStock ?? true,
-  subscriptionPrice: Math.round(product.price * 0.9),
+  subscriptionPrice: product.subscriptionPrice ?? Math.round(product.price * 0.9),
   images: productImages(product.image, product.scene),
   specs: {
     ...baseSpecs,

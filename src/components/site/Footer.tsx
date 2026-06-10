@@ -30,22 +30,38 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/category/lighting" className="transition-colors hover:text-foreground">
+                <Link
+                  to="/category/$slug"
+                  params={{ slug: "lighting" }}
+                  className="transition-colors hover:text-foreground"
+                >
                   Освещение
                 </Link>
               </li>
               <li>
-                <Link to="/category/audio" className="transition-colors hover:text-foreground">
+                <Link
+                  to="/category/$slug"
+                  params={{ slug: "audio" }}
+                  className="transition-colors hover:text-foreground"
+                >
                   Акустика
                 </Link>
               </li>
               <li>
-                <Link to="/category/climate" className="transition-colors hover:text-foreground">
+                <Link
+                  to="/category/$slug"
+                  params={{ slug: "climate" }}
+                  className="transition-colors hover:text-foreground"
+                >
                   Климат
                 </Link>
               </li>
               <li>
-                <Link to="/category/security" className="transition-colors hover:text-foreground">
+                <Link
+                  to="/category/$slug"
+                  params={{ slug: "security" }}
+                  className="transition-colors hover:text-foreground"
+                >
                   Безопасность
                 </Link>
               </li>

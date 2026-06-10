@@ -1,26 +1,28 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, ShieldCheck } from "lucide-react";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { FUNDING, PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Container } from "@/components/site/Container";
 import { useCart } from "@/store/cart";
 import { products } from "@/data/products";
+import type { Product } from "@/data/products";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { createPaypalOrder, capturePaypalOrder } from "@/lib/paypal";
 
 // --- TYPES & HELPERS ---
 export type SubscriptionTier = "none" | "silver" | "gold" | "platinum";
 
 export function calculateTotals(
-  lines: { product: any; item: { quantity: number; productId: string } }[],
+  lines: { product: Product; item: { quantity: number; productId: string } }[],
   tier: SubscriptionTier,
-  deliveryType: "courier" | "pickup"
+  deliveryType: "courier" | "pickup",
 ) {
   const subtotal = lines.reduce((acc, l) => acc + l.product.price * l.item.quantity, 0);
 
   // Guest calculations (Baseline)
   const guestVat = subtotal * 0.16; // 16% VAT
-  const guestDelivery = deliveryType === "courier" ? subtotal * 0.10 : 0; // +10% shipping
+  const guestDelivery = deliveryType === "courier" ? subtotal * 0.1 : 0; // +10% shipping
   const guestTotal = subtotal + guestVat + guestDelivery;
 
   // Subscriber logic
@@ -28,19 +30,19 @@ export function calculateTotals(
   let hasFreeDelivery = false;
 
   if (tier === "silver") {
-    discountPercent = 0.10; // 10% discount
+    discountPercent = 0.1; // 10% discount
   } else if (tier === "gold") {
     discountPercent = 0.15; // 15% discount
     hasFreeDelivery = true;
   } else if (tier === "platinum") {
-    discountPercent = 0.20; // 20% discount
+    discountPercent = 0.2; // 20% discount
     hasFreeDelivery = true;
   }
 
   const subscriberDiscount = subtotal * discountPercent;
   const finalSubtotal = subtotal - subscriberDiscount;
   const finalVat = finalSubtotal * 0.16;
-  const finalDelivery = hasFreeDelivery || deliveryType === "pickup" ? 0 : finalSubtotal * 0.10;
+  const finalDelivery = hasFreeDelivery || deliveryType === "pickup" ? 0 : finalSubtotal * 0.1;
   const finalTotal = finalSubtotal + finalVat + finalDelivery;
 
   const savings = guestTotal - finalTotal;
@@ -67,11 +69,13 @@ function CheckoutPage() {
   const items = useCart((s) => s.items);
   const clear = useCart((s) => s.clear);
   const navigate = Route.useNavigate();
-  
+
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [delivery, setDelivery] = useState<"courier" | "pickup">("courier");
   const [payment, setPayment] = useState<"kaspi" | "card" | "paypal" | "cash">("kaspi");
-  
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+
   // Using a local state to let user test the 'Smart Savings' logic during checkout.
   // In a real app, this would be fetched from user/auth store.
   const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("gold");
@@ -81,6 +85,13 @@ function CheckoutPage() {
     .filter((l) => l.product);
 
   const totals = calculateTotals(lines, subscriptionTier, delivery);
+  const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "sb";
+  const paypalCurrency = (import.meta.env.VITE_PAYPAL_CURRENCY ?? "USD").toUpperCase();
+  const paypalCheckoutData = {
+    items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+    subscriptionTier,
+    deliveryType: delivery,
+  };
 
   const steps = [
     { n: 1, label: "Доставка" },
@@ -283,24 +294,120 @@ function CheckoutPage() {
                     </div>
                   </dl>
                 </div>
-                
-                {payment === "paypal" ? (
+
+                {payment === "paypal" || payment === "card" ? (
                   <div className="mt-6 relative rounded-3xl border border-white/10 bg-surface p-8 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] backdrop-blur-md">
-                    {/* TODO: Replace with real credentials once business account is fully verified */}
-                    <PayPalScriptProvider options={{ clientId: "sb", currency: "USD" }}>
-                      <PayPalButtons 
-                        style={{ layout: "vertical", color: "silver", shape: "pill", label: "checkout" }}
-                        createOrder={(data, actions) => {
-                          return actions.order.create({
-                            intent: "CAPTURE",
-                            purchase_units: [{ 
-                              amount: { currency_code: "USD", value: Math.max(1, Math.round(totals.total / 450)).toString() } 
-                            }],
-                          });
+                    <div className="mb-5 rounded-2xl border border-border bg-background/70 p-4 text-sm text-ink-soft">
+                      {payment === "card"
+                        ? "PayPal безопасно откроет защищенную форму оплаты банковской картой. Данные карты не хранятся на AURA."
+                        : "PayPal безопасно откроет оплату через PayPal или банковскую карту. Данные карты не хранятся на AURA."}
+                    </div>
+                    {paymentError && (
+                      <div className="mb-5 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-600">
+                        {paymentError}
+                      </div>
+                    )}
+                    <PayPalScriptProvider
+                      options={{
+                        clientId: paypalClientId,
+                        currency: paypalCurrency,
+                        intent: "capture",
+                        components: "buttons",
+                        enableFunding: "card",
+                      }}
+                    >
+                      {payment === "paypal" && (
+                        <PayPalButtons
+                          style={{
+                            layout: "vertical",
+                            color: "silver",
+                            shape: "pill",
+                            label: "checkout",
+                          }}
+                          disabled={isPaymentProcessing}
+                          createOrder={async () => {
+                            setPaymentError(null);
+                            const order = await createPaypalOrder({ data: paypalCheckoutData });
+
+                            return order.id;
+                          }}
+                          onApprove={async (data) => {
+                            if (!data.orderID) {
+                              setPaymentError("PayPal не вернул номер заказа. Попробуйте еще раз.");
+                              return;
+                            }
+
+                            setIsPaymentProcessing(true);
+                            setPaymentError(null);
+
+                            try {
+                              await capturePaypalOrder({ data: { orderId: data.orderID } });
+                              clear();
+                              navigate({ to: "/order/success" });
+                            } catch (error) {
+                              setPaymentError(
+                                error instanceof Error
+                                  ? error.message
+                                  : "Не удалось подтвердить оплату PayPal. Попробуйте еще раз.",
+                              );
+                            } finally {
+                              setIsPaymentProcessing(false);
+                            }
+                          }}
+                          onCancel={() => {
+                            setPaymentError("Оплата PayPal была отменена.");
+                          }}
+                          onError={(error) => {
+                            setPaymentError(
+                              error instanceof Error
+                                ? error.message
+                                : "PayPal временно недоступен. Попробуйте еще раз.",
+                            );
+                          }}
+                        />
+                      )}
+                      <PayPalButtons
+                        fundingSource={FUNDING.CARD}
+                        style={{ layout: "vertical", color: "black", shape: "pill", label: "pay" }}
+                        disabled={isPaymentProcessing}
+                        createOrder={async () => {
+                          setPaymentError(null);
+                          const order = await createPaypalOrder({ data: paypalCheckoutData });
+
+                          return order.id;
                         }}
-                        onApprove={async (data, actions) => {
-                          clear();
-                          navigate({ to: "/order/success" });
+                        onApprove={async (data) => {
+                          if (!data.orderID) {
+                            setPaymentError("PayPal не вернул номер заказа. Попробуйте еще раз.");
+                            return;
+                          }
+
+                          setIsPaymentProcessing(true);
+                          setPaymentError(null);
+
+                          try {
+                            await capturePaypalOrder({ data: { orderId: data.orderID } });
+                            clear();
+                            navigate({ to: "/order/success" });
+                          } catch (error) {
+                            setPaymentError(
+                              error instanceof Error
+                                ? error.message
+                                : "Не удалось подтвердить оплату PayPal. Попробуйте еще раз.",
+                            );
+                          } finally {
+                            setIsPaymentProcessing(false);
+                          }
+                        }}
+                        onCancel={() => {
+                          setPaymentError("Оплата PayPal была отменена.");
+                        }}
+                        onError={(error) => {
+                          setPaymentError(
+                            error instanceof Error
+                              ? error.message
+                              : "PayPal временно недоступен. Попробуйте еще раз.",
+                          );
                         }}
                       />
                     </PayPalScriptProvider>
@@ -325,9 +432,9 @@ function CheckoutPage() {
               <div className="rounded-3xl border border-border bg-surface p-8">
                 <div className="flex items-center justify-between">
                   <h3 className="eyebrow">Заказ · {lines.length} позиций</h3>
-                  <select 
+                  <select
                     className="text-xs border border-border rounded-md bg-transparent p-1 text-ink-soft outline-none focus:border-foreground"
-                    value={subscriptionTier} 
+                    value={subscriptionTier}
                     onChange={(e) => setSubscriptionTier(e.target.value as SubscriptionTier)}
                   >
                     <option value="none">Без подписки</option>
@@ -340,7 +447,11 @@ function CheckoutPage() {
                   {lines.map(({ item, product }) => (
                     <li key={item.productId} className="flex gap-3">
                       <div className="h-14 w-14 overflow-hidden rounded-xl bg-background ring-1 ring-border">
-                        <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
+                        <img
+                          src={product.images[0]}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
                       </div>
                       <div className="flex flex-1 items-start justify-between gap-3 text-sm">
                         <div>
@@ -359,7 +470,7 @@ function CheckoutPage() {
                     <dt className="text-ink-soft">Сумма товаров</dt>
                     <dd className="tabular-nums">{formatPrice(totals.baseSubtotal)}</dd>
                   </div>
-                  
+
                   {subscriptionTier !== "none" && (
                     <div className="flex justify-between">
                       <dt className="text-ink-soft">Скидка ({subscriptionTier.toUpperCase()})</dt>
@@ -380,7 +491,9 @@ function CheckoutPage() {
                 </dl>
                 <div className="mt-4 flex items-baseline justify-between border-t border-border pt-4">
                   <span className="text-sm font-medium text-foreground">Итоговая сумма</span>
-                  <span className="font-serif text-2xl tabular-nums">{formatPrice(totals.total)}</span>
+                  <span className="font-serif text-2xl tabular-nums">
+                    {formatPrice(totals.total)}
+                  </span>
                 </div>
               </div>
 
@@ -395,9 +508,10 @@ function CheckoutPage() {
                   </div>
                   <h4 className="mt-2 font-serif text-xl text-foreground">Умная экономия</h4>
                   <p className="mt-2 text-sm text-ink-soft leading-relaxed">
-                    Будучи участником подписки <b>{subscriptionTier.toUpperCase()}</b>, вы избегаете дополнительных наценок на доставку и получаете закрытую скидку.
+                    Будучи участником подписки <b>{subscriptionTier.toUpperCase()}</b>, вы избегаете
+                    дополнительных наценок на доставку и получаете закрытую скидку.
                   </p>
-                  
+
                   <dl className="mt-5 space-y-2 border-l-2 border-foreground/10 pl-4 text-sm">
                     <div className="flex justify-between text-ink-soft">
                       <dt>Без подписки:</dt>

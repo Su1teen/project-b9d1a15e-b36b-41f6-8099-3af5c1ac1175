@@ -170,8 +170,26 @@ for (const csvPath of csvFiles) {
       continue;
     }
 
-    const price = parseInt(r[COL.price] || "0", 10);
+    let price = parseInt(r[COL.price] || "0", 10);
     if (!price || price <= 0) continue;
+
+    let subscriptionPrice;
+    
+    // Apply special pricing logic based on the origin CSV file
+    const filename = path.basename(csvPath);
+    if (filename === "DALI_Catalog_Import.csv") {
+      // DALI: retail +50%, subscription +25% of original subscription
+      const originalRetail = price;
+      price = Math.ceil((originalRetail * 1.5) / 100) * 100;
+      subscriptionPrice = Math.ceil((originalRetail * 0.9 * 1.25) / 100) * 100;
+    } else if (filename === "Airtable_Catalog_Import.csv") {
+      // Airtable: retail unchanged, subscription -25% of original subscription
+      const originalRetail = price;
+      // price remains same
+      subscriptionPrice = Math.ceil((originalRetail * 0.9 * 0.75) / 100) * 100;
+    } else {
+      subscriptionPrice = Math.ceil((price * 0.9) / 100) * 100;
+    }
 
     allProducts.push({
       slug,
@@ -186,6 +204,7 @@ for (const csvPath of csvFiles) {
       subcategory: (r[COL.subSlug] || "").trim(),
       subcategoryLabel: (r[COL.subLabel] || "").trim(),
       price,
+      subscriptionPrice,
       rating: parseFloat(r[COL.rating] || "4.7"),
       reviewsCount: parseInt(r[COL.reviews] || "0", 10),
       protocols: splitMulti(r[COL.protocols] || ""),
@@ -246,6 +265,7 @@ for (const p of allProducts) {
   ts += `    subcategory: "${esc(p.subcategory)}",\n`;
   ts += `    subcategoryLabel: "${esc(p.subcategoryLabel)}",\n`;
   ts += `    price: ${p.price},\n`;
+  ts += `    subscriptionPrice: ${p.subscriptionPrice},\n`;
   ts += `    rating: ${p.rating},\n`;
   ts += `    reviewsCount: ${p.reviewsCount},\n`;
   ts += `    image: ${p.varName},\n`;
